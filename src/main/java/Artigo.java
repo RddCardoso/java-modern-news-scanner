@@ -1,0 +1,1 @@
+public record Artigo(String titulo, String link) {}

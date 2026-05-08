@@ -4,23 +4,21 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args){
+        // 1. Criamos a instância do serviço
+        ScraperService scraper = new ScraperService();
         List<Artigo> noticias = null;
-        try {
-            noticias = extrairNoticias("https://news.ycombinator.com/", ".titleline > a");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        try{
+            // 2. Pedimos ao serviço para fazer o trabalho
+            noticias = scraper.extrairNoticias("https://news.ycombinator.com/", ".titleline > a");
+
+            // 3. Mostramos o resultado
+            if (noticias != null){
+                noticias.forEach(System.out::println);
+            }
+
+        } catch (IOException e){
+            System.err.println("Erro ao ligar ao serviço de notícias" + e.getMessage());
         }
-
-        // Imprime cada notícia usando Method Reference (atalho moderno do Java)
-        noticias.forEach(System.out::println);
-    }
-
-    public static List<Artigo> extrairNoticias(String url, String selector) throws IOException{
-        var doc = Jsoup.connect(url).get();
-        return doc.select(selector).stream()
-                .map(elemento -> new Artigo(elemento.text(), elemento.absUrl("href")))
-                .filter(artigo -> artigo.titulo().toLowerCase().contains("java") ||
-                                artigo.titulo().toLowerCase().contains("ai"))
-                .toList();
     }
 }

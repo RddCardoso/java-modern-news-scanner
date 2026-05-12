@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:16
+    container_name: postgres-news-db
+    restart: always
+    environment:
+      POSTGRES_USER: utilizador_java
+      POSTGRES_PASSWORD: minha_password_123
+      POSTGRES_DB: news_scraper_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data

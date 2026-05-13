@@ -18,7 +18,7 @@ This project serves as the backbone for a future **Stock Market Sentiment Analyz
 ## 📖 How it Wotks
 The core logic utilizes a professional-grade pipeline:
 1. **Selection:** Targets specific CSS selectors to isolate relevant headlines.
-2. **Mapping:** converts raw HTML elements into immutable 'Artigo' objects.
+2. **Mapping:** converts raw HTML elements into immutable 'com.newsscanner.Artigo' objects.
 3. **Filtering:** Applies logic to isolate high-value topics like AI and Java.
 4. **Collection:** Bundles processed data into a clean, usable List.
 

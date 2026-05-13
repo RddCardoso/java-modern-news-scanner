@@ -1,3 +1,5 @@
+package com.newsscanner;
+
 import jakarta.persistence.*;
 
 @Entity // Define que esta classe é uma tabela no banco de dados

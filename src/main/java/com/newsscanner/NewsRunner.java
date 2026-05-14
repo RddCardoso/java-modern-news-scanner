@@ -20,18 +20,34 @@ public class NewsRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         System.out.println("--- A iniciar extração de notícias ---");
 
-        for(int i = 1; i <= 3; i++) {
+        int guardadas = 0;
+        int ignoradas = 0;
+
+        for(int i = 1; i <= 10; i++) {
             String url = "https://pplware.sapo.pt/page/" + i + "/";
             System.out.println("A ler página " + i + "...");
 
             List<Artigo> noticias = scraper.extrairNoticias(url, ".post-title a");
 
             // A MAGIA ACONTECE AQUI: Guardar na base de dados!
-            repository.saveAll(noticias);
+            for(Artigo artigo : noticias) {
+                if(!repository.existsByLink(artigo.getLink())) {
+                    repository.save(artigo);
+                    guardadas++;
+                    System.out.println("✅ Guardado: " + artigo.getTitulo());
+                } else {
+                    ignoradas++;
+                    System.out.println("⚠\uFE0F Já existe: " + artigo.getTitulo());
+                }
+            }
 
             Thread.sleep(1000);
         }
 
+        System.out.println("\n--- RESUMO DA OPERAÇÃO ---");
+        System.out.println("Novas guardadas: " + guardadas);
+        System.out.println("Ignoradas (duplicadas): " + ignoradas);
+        System.out.println("Total processadas: " + (guardadas + ignoradas));
         System.out.println("✅ Processo concluído! Notícias guardadas no Docker.");
     }
 }

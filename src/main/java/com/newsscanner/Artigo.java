@@ -11,7 +11,7 @@ public  class Artigo{
 
     private String titulo;
 
-    @Column(columnDefinition = "TEXT") // TEXT permite textos longos (links ou descrições)
+    @Column(columnDefinition = "TEXT", unique = true, nullable = false) // TEXT permite textos longos (links ou descrições)
     private String link;
 
     // Construtor  vazio obrigatório para o JPA

@@ -2,6 +2,8 @@ package com.newsscanner;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity // Define que esta classe é uma tabela no banco de dados
 @Table(name= "artigos")
 public  class Artigo{
@@ -14,12 +16,15 @@ public  class Artigo{
     @Column(columnDefinition = "TEXT", unique = true, nullable = false) // TEXT permite textos longos (links ou descrições)
     private String link;
 
+    private LocalDateTime dataPublicacao;
+
     // Construtor  vazio obrigatório para o JPA
     public Artigo() {}
 
-    public Artigo(String titulo, String link) {
+    public Artigo(String titulo, String link,  LocalDateTime dataPublicacao) {
         this.titulo = titulo;
         this.link = link;
+        this.dataPublicacao = dataPublicacao;
     }
 
     // Getters e Setters
@@ -47,5 +52,13 @@ public  class Artigo{
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public LocalDateTime getDataPublicacao() {
+        return dataPublicacao;
+    }
+
+    public void setDataPublicacao(LocalDateTime dataPublicacao) {
+        this.dataPublicacao = dataPublicacao;
     }
 }

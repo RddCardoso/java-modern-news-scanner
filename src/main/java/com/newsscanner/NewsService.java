@@ -20,7 +20,7 @@ public class NewsService {
             try {
                 String url = "https://pplware.sapo.pt/page/" + i + "/";
                 // 1. Extração
-                List<Artigo> capturadas = scraper.extrairNoticias(url, "h2 a, .post-title a, .featured-title a");
+                List<Artigo> capturadas = scraper.extrairNoticias(url);
 
                 // 2. Filtro de duplicados locais e persistentes
                 List<Artigo> paraGuardar = capturadas.stream()

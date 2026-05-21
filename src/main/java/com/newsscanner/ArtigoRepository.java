@@ -2,7 +2,6 @@ package com.newsscanner;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 @Repository
@@ -13,5 +12,5 @@ public interface ArtigoRepository extends JpaRepository<Artigo, Long> {
     boolean existsByLink(String link);
 
     // Procura o último artigo inserido com base no ID (que é autoincrement e sequencial)
-    Optional<Artigo> findFirstByOrderByIdDesc();
+    Optional<Artigo> findTopByOrderByDataPublicacaoDesc();
 }

@@ -17,8 +17,8 @@
 ## ⏳ Next Phase: Incremental Synchronization by Date
 - [x] **HTML Mapping**: Identify where Pplware hides the publication date in  the DOM (e.g., `<time>` tar or metadata).
 - [x] **Entity Evolution**: Add a `dataPublicacao` field (`LocalDate` or `LocalDateTime`) to the `Artigo` class.
-- [ ] **Control Parameter**: Allow `NewsService` to accept a `date Limit` (e.g., fetch only since last Friday or `last X days`).
-- [ ] **Dynamic Stop (Break)**: Change the page loop to automatically stop reading when it hits the first news article with a date older than the defined limit.
+- [x] **Control Parameter**: Allow `NewsService` to accept a `date Limit` (e.g., fetch only since last Friday or `last X days`).
+- [x] **Dynamic Stop (Break)**: Change the page loop to automatically stop reading when it hits the first news article with a date older than the defined limit.
 
 ## ⚙️ Continuous Improvements
 - [ ] Implement a professional logger ('org.slf4j.Logger') in `NewsService` to replace `System.out.println`.

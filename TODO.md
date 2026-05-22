@@ -21,5 +21,5 @@
 - [x] **Dynamic Stop (Break)**: Change the page loop to automatically stop reading when it hits the first news article with a date older than the defined limit.
 
 ## ⚙️ Continuous Improvements
-- [ ] Implement a professional logger ('org.slf4j.Logger') in `NewsService` to replace `System.out.println`.
+- [x] Implement a professional logger ('org.slf4j.Logger') in `NewsService` to replace `System.out.println`.
 - [ ] Create a scheduler (`@Scheduled`) to make the scraper run automatically every X hours.

@@ -1,5 +1,7 @@
 package com.newsscanner;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -13,4 +15,7 @@ public interface ArtigoRepository extends JpaRepository<Artigo, Long> {
 
     // Procura o último artigo inserido com base no ID (que é autoincrement e sequencial)
     Optional<Artigo> findTopByOrderByDataPublicacaoDesc();
+
+    // Filtra por título, ignora maiúsculas/minúsculas e suporta paginação
+    Page<Artigo> findByTituloContainingIgnoreCase(String titulo, Pageable pageable);
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,9 +27,16 @@ public class ArtigoController {
     }
 
     @GetMapping
-    public Page<Artigo> listarTodos(@PageableDefault(size = 10) Pageable pageable) {
-        log.info("\uD83C\uDF10 API: Requisição GET paginada recebida. Página: {}, Tamanho: {}",
-                pageable.getPageNumber(), pageable.getPageSize());
+    public Page<Artigo> listarTodos(
+            @RequestParam(required = false)  String titulo,
+            @PageableDefault(size = 10) Pageable pageable) {
+
+        if(titulo != null && !titulo.trim().isEmpty()) {
+            log.info("\uD83C\uDF10 API: A pesquisar artigos com o título contendo: '{}' (Página: {})", titulo, pageable.getPageNumber());
+            return artigoRepository.findByTituloContainingIgnoreCase(titulo, pageable);
+        }
+
+        log.info("\uD83C\uDF10 API: Nenhum filtro aplicado. A listar todos os artigos (Oágina: {})",  pageable.getPageNumber());
         return artigoRepository.findAll(pageable);
     }
 }

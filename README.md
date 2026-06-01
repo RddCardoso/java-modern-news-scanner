@@ -7,7 +7,7 @@ This project serves as the backbone for a future **Stock Market Sentiment Analyz
 
 ## 🛠 Tech Stack
 - **Language:** Java 21 (utilizing Records for clean data modeling)
-- **Framework:** Spring Boot 3 (JPA/Hibernate)
+- **Framework:** Spring Boot 3 (JPA/Hibernate & Spring Web)
 - **Database:** PostgreSQL (running in Docker)
 - **Library:** Jsoup (for robust HTML parsing)
 - **Architecture:** Functional Programming approach with Java Streams API
@@ -38,8 +38,9 @@ psql -U utilizador_java -d news_scraper_db
 - **Modern Pipeline:** Uses Java Streams for efficient data transformation and filtering.
 - **Clean Architecture:** Implements Java Records to ensure data immutability.
 - **Case-Insensitive Filtering:** Advanced filtering logic to capture keywords regardless of formatting.
+- **REST API Endpoint:** Exposes a paginated and searchable JSON at ``/api/artigos`` leveraging Spring Data Pageable.
 
-## 📖 How it Wotks
+## 📖 How it Works
 The core logic utilizes a professional-grade pipeline:
 1. **Selection:** Targets specific CSS selectors to isolate relevant headlines.
 2. **Mapping:** converts raw HTML elements into immutable 'com.newsscanner.Artigo' objects.
@@ -50,8 +51,9 @@ The core logic utilizes a professional-grade pipeline:
 
 ## 🎯 Roadmap
 - [x] Implement database persistence (SQL).
-- [ ] Prevent duplicate news entries (Idempotency).
-- [ ] Create a REST API to expose data via JSON. 
+- [x] Prevent duplicate news entries (Idempotency).
+- [x] Create a REST API to expose data via JSON. 
+- [ ] Implement a background job scheduler (``@Scheduled``) for automatic synchronization.
 - [ ] Add financial news sources (Yahoo Finance, CNBC),
 - [ ] Integrate a Machine Learning model for Sentiment Analysis.
 - [ ] Create a web dashboard for data visualization.

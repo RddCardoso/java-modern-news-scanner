@@ -2,12 +2,13 @@
 
 ## 🛠️ High Priority (Technical Debt)
 - [x] **Prevent Duplicates**: Implement `existsByLink` in the repository before saving in the Runner.
-- [ ] **Runner Control**: Implement logic to prevent the scraper from running unnecessarily on every restart.
+- [ ] **Runner Control**: Implement a ``CommandLineRunner`` to fetch 10 pages in historical mode (``forcarCargaHistorica = true``) on application startup so it seeds the database immediately.
+- [ ] **Scheduler Delay**: Set an ``initialDelay`` of 5 minutes (300000ms) on the ``@Scheduled`` method to allow seeding to finish completely before the hourly cycle begins.
 - [ ] **Database Cleanup**: Create a SQL script to remove existing duplicates (identified via DBeaver).
 
 ## 🌟 News Features
-- [ ] **REST API**: Create `ArtigoController` to expose data.
-- [ ] **Search Filters**: Add endpoints to search news by keywords in the tittle.
+- [x] **REST API**: Create `ArtigoController` to expose data.
+- [x] **Search Filters**: Add endpoints to search news by keywords in the tittle.
 - [ ] **Metadata**: Add a `collected_at` field to track when the news was scraped.
 
 ## ⚙️ Infrastructure & Tools 
@@ -22,4 +23,10 @@
 
 ## ⚙️ Continuous Improvements
 - [x] Implement a professional logger ('org.slf4j.Logger') in `NewsService` to replace `System.out.println`.
-- [ ] Create a scheduler (`@Scheduled`) to make the scraper run automatically every X hours.
+- [x] Create a scheduler (`@Scheduled`) to make the scraper run automatically every X hours (tested with 10s delay).
+- [x] Optimize terminal logs by disabling raw SQL execution queries (`spring.jpa.show-sql=false`).
+- [x] Test and validate historical load manually via Postman API endpoint (`POST /sincronizar`).
+
+## 📊 Future Phases (Market Analyzer & Intel)
+- [ ] **Keyword Extraction**: Implements a service to parse titles/content and extract relevant market keywords.
+- [ ] **Spring AI Integration**: Connect to an LLM API (OpenAI/Ollama) to perform sentiment analysis on collected news.

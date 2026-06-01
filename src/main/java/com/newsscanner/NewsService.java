@@ -21,7 +21,7 @@ public class NewsService {
     @Autowired private ScraperService scraper;
     @Autowired private ArtigoRepository repository;
 
-    public void processarNoticias(int numPaginas) {
+    public void processarNoticias(int numPaginas, boolean forcarCargaHistorica) {
         Set<String> linksProcessadosNestaSessao = new HashSet<>();
 
         // 1. Definir data limite dinâmica (ex: ir buscar à BD ou fixar 3 dias para testes)
@@ -33,7 +33,7 @@ public class NewsService {
 
         for(int i = 1; i <= numPaginas; i++) {
 
-            if(alcancouLimiteDeData) {
+            if(alcancouLimiteDeData && !forcarCargaHistorica) {
                 break;
             }
 
@@ -49,9 +49,15 @@ public class NewsService {
 
                     // CRITÉRIO DE DATA: Se a notícia for anterior à data limite, activa o stop
                     if(a.getDataPublicacao().isBefore(dataLimiteBD)) {
-                        log.warn("\uD83D\uDED1 Chegámos a notícias antigas/processadas. A activar paragem dinâmica...");
-                        alcancouLimiteDeData = true;
-                        break;
+                        if(forcarCargaHistorica) {
+                            // Se for historico, ignoramos o limite de data e CONTINUAMOS a avaliar as outras desta página
+                            log.debug("Notícia anterior à data limite, mas a continuar devido ao modo histórico.");
+                            // Não fazemos break nem alteramos 'alcancouLimiteDeData' para true
+                        } else {
+                            log.warn("🛑 Chegámos à notícias antigas/processadas. A activar paragem dinâmica...");
+                            alcancouLimiteDeData = true;
+                            break;
+                        }
                     }
 
                     String link = a.getLink();
@@ -64,6 +70,15 @@ public class NewsService {
                     if(!existeNaBD) {
                         linksProcessadosNestaSessao.add(link);
                         paraGuardar.add(a);
+                    } else if (forcarCargaHistorica) {
+                        // Se já existe na BD e estamos em modo histórico, apenas saltamos para a próxima sem parar o scraper
+                        continue;
+                    } else {
+                        // Comportamento normal do Scheduler: se já existe uma notícia na BD na página 1,
+                        // assumimos que as seguintes também já existem. Activa a paragem de segurança.
+                        log.warn("\uD83D\uDED1 Artigo já existe na BD. Paragem dinâmica ativada para evitar duplicados.");
+                        alcancouLimiteDeData = true;
+                        break;
                     }
 
                 }

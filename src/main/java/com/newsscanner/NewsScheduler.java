@@ -16,11 +16,9 @@ public class NewsScheduler {
         this.newsService = newsService;
     }
 
-    /* fixedDelay = 3600000 significa que o método corre 1 hora depois
-     * após terminar a execução anterior (ideal para testar agora!).
-     * Mais tarde será mudado para 1 hora (3600000).
-     */
-    @Scheduled(fixedDelay = 3600000)
+    // initialDelay = 300000 ms(5 minutos) -> O scheduler aguarda 5 minutos após o boot antes de correr a primeira vez
+    // fixedDelay = 3600000 ms Corre de hora em hora
+    @Scheduled(initialDelay = 300000, fixedDelay = 3600000)
     public void executarScraperAgendado() {
         log.info("⏰ SCHEDULER: O relógio disparou! Iniciando sincronização automática...");
         try {

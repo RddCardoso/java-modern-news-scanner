@@ -2,19 +2,19 @@
 
 ## 🛠️ High Priority (Technical Debt)
 - [x] **Prevent Duplicates**: Implement `existsByLink` in the repository before saving in the Runner.
-- [ ] **Runner Control**: Implement a ``CommandLineRunner`` to fetch 10 pages in historical mode (``forcarCargaHistorica = true``) on application startup so it seeds the database immediately.
-- [ ] **Scheduler Delay**: Set an ``initialDelay`` of 5 minutes (300000ms) on the ``@Scheduled`` method to allow seeding to finish completely before the hourly cycle begins.
-- [ ] **Database Cleanup**: Create a SQL script to remove existing duplicates (identified via DBeaver).
+- [x] **Runner Control**: Implement a ``CommandLineRunner`` to fetch 10 pages in historical mode (``forcarCargaHistorica = true``) on application startup so it seeds the database immediately.
+- [x] **Scheduler Delay**: Set an ``initialDelay`` of 5 minutes (300000ms) on the ``@Scheduled`` method to allow seeding to finish completely before the hourly cycle begins.
+- [x] **Database Cleanup**: Create a SQL script to remove existing duplicates (identified via DBeaver).
 
 ## 🌟 News Features
 - [x] **REST API**: Create `ArtigoController` to expose data.
 - [x] **Search Filters**: Add endpoints to search news by keywords in the tittle.
-- [ ] **Metadata**: Add a `collected_at` field to track when the news was scraped.
+- [x] **Metadata**: Add a `collected_at` field to track when the news was scraped.
 
 ## ⚙️ Infrastructure & Tools 
-- [ ] **API Documentation**: Configure Swagger/OpenAPI
+- [x] **API Documentation**: Configure Swagger/OpenAPI
 - [ ] **Docker Optimization**: Ensure data volumes are properly managed and back up.
-
+    
 ## ⏳ Next Phase: Incremental Synchronization by Date
 - [x] **HTML Mapping**: Identify where Pplware hides the publication date in  the DOM (e.g., `<time>` tar or metadata).
 - [x] **Entity Evolution**: Add a `dataPublicacao` field (`LocalDate` or `LocalDateTime`) to the `Artigo` class.

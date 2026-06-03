@@ -21,7 +21,7 @@ public class NewsService {
     @Autowired private ScraperService scraper;
     @Autowired private ArtigoRepository repository;
 
-    public void processarNoticias(int numPaginas, boolean forcarCargaHistorica) {
+    public synchronized void processarNoticias(int numPaginas, boolean forcarCargaHistorica) {
         Set<String> linksProcessadosNestaSessao = new HashSet<>();
 
         // 1. Definir data limite dinâmica (ex: ir buscar à BD ou fixar 3 dias para testes)

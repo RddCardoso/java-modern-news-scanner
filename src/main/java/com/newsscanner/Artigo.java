@@ -1,6 +1,7 @@
 package com.newsscanner;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +18,10 @@ public  class Artigo{
     private String link;
 
     private LocalDateTime dataPublicacao;
+
+    @CreationTimestamp
+    @Column(name = "collected_at", nullable = false, updatable = false)
+    private LocalDateTime collectedAt;
 
     // Construtor  vazio obrigatório para o JPA
     public Artigo() {}
@@ -60,5 +65,9 @@ public  class Artigo{
 
     public void setDataPublicacao(LocalDateTime dataPublicacao) {
         this.dataPublicacao = dataPublicacao;
+    }
+
+    public LocalDateTime getCollectedAt() {
+        return collectedAt;
     }
 }

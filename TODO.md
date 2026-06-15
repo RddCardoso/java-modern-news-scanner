@@ -13,13 +13,13 @@
 
 ## ⚙️ Infrastructure & Tools 
 - [x] **API Documentation**: Configure Swagger/OpenAPI
-- [ ] **Docker Optimization**: Ensure data volumes are properly managed and back up.
+- [x] **Docker Optimization**: Ensure data volumes are properly managed and back up.
     
-## ⏳ Next Phase: Incremental Synchronization by Date
-- [x] **HTML Mapping**: Identify where Pplware hides the publication date in  the DOM (e.g., `<time>` tar or metadata).
-- [x] **Entity Evolution**: Add a `dataPublicacao` field (`LocalDate` or `LocalDateTime`) to the `Artigo` class.
-- [x] **Control Parameter**: Allow `NewsService` to accept a `date Limit` (e.g., fetch only since last Friday or `last X days`).
-- [x] **Dynamic Stop (Break)**: Change the page loop to automatically stop reading when it hits the first news article with a date older than the defined limit.
+## ⏳ Next Phase: On-Demand Historical Load (Backfilling)
+- [ ] **API Endpoint**: Create a ``/api/artigos/historico`` endpoint that accepts a target date string.
+- [ ] **Adaptive Loop**: Implement page iteration that dynamically checks the publication date.
+- [ ] **Boundary Logic**: Ensure the stop condition uses ``ìsBefore(dataLimite)`` so that the target day's articles are fully included.
+- [ ] **Swagger Validation**: Test the historical backfill with a past date (e.g., 2026-06-01) and verify database state.
 
 ## ⚙️ Continuous Improvements
 - [x] Implement a professional logger ('org.slf4j.Logger') in `NewsService` to replace `System.out.println`.

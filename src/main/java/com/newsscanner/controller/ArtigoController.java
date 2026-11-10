@@ -1,8 +1,10 @@
-package com.newsscanner;
+package com.newsscanner.controller;
 
-import com.newsscanner.Artigo;
-import com.newsscanner.ArtigoRepository;
+import com.newsscanner.entity.Artigo;
+import com.newsscanner.repository.ArtigoRepository;
+import com.newsscanner.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/artigos")
@@ -57,8 +59,31 @@ public class ArtigoController {
         log.info("\uD83D\uDD79\uFE0F API: Sincronização manual forçada para {} páginas!", paginas);
 
         /// Executa o scraper à mão com o número de páginas que escolher
-        newsService.processarNoticias(paginas, forcar);
+        newsService.processarNoticias(paginas, forcar, null);
 
         return ResponseEntity.ok("Sincronização de " + paginas + " página(s) concluída com sucesso!");
     }
+
+    @PostMapping("/historico")
+    @Operation(
+            summary = "Fetch historical news since a specific date",
+            description = "Triggers the scraper to go back in time and fetch all articles published since the provided date string (YYYY-MM-DD)."
+    )
+    public ResponseEntity<String> carregarHistorico(
+            @RequestParam @Parameter(description = "Target date in format YYYY-MM-DD", example = "2026-06-01")
+            String desdeData) {
+
+        log.info("ℹ\uFE0F API: A iniciar carga histórica de notícias desde: {}", desdeData);
+
+        // 1. Converter a String recebida para LocalDate
+        LocalDate dataLimite = LocalDate.parse(desdeData);
+
+        // 2. Chamar o serviço
+        int totalCapturado = newsService.carregarNoticiasDesde(dataLimite);
+
+        log.info("✅ API: Carga histórica finalizada. Foram guardados {} novos artigos.",  totalCapturado);
+
+        return ResponseEntity.ok("Sincronização histórica concluída. Foram adicionados " + totalCapturado + " novos artigos.");
+    }
+
 }

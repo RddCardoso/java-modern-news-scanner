@@ -1,8 +1,11 @@
-package com.newsscanner;
+package com.newsscanner.service;
 
+import com.newsscanner.entity.Artigo;
+import com.newsscanner.repository.ArtigoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,8 +13,6 @@ import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.stream.Collectors;
 
 @Service
 public class NewsService {
@@ -21,11 +22,11 @@ public class NewsService {
     @Autowired private ScraperService scraper;
     @Autowired private ArtigoRepository repository;
 
-    public synchronized void processarNoticias(int numPaginas, boolean forcarCargaHistorica) {
+    public synchronized void processarNoticias(int numPaginas, boolean forcarCargaHistorica, LocalDateTime dataLimiteExterna) {
         Set<String> linksProcessadosNestaSessao = new HashSet<>();
 
-        // 1. Definir data limite dinâmica (ex: ir buscar à BD ou fixar 3 dias para testes)
-        LocalDateTime  dataLimiteBD = repository.findTopByOrderByDataPublicacaoDesc()
+        // Se vier uma data da API, usa-a. Se não, vai buscara última da BD ou o default de 3 dias.
+        LocalDateTime  dataLimiteBD = (dataLimiteExterna != null) ? dataLimiteExterna : repository.findTopByOrderByDataPublicacaoDesc()
                 .map(Artigo::getDataPublicacao)
                 .orElse(LocalDateTime.now().minusDays(3));
 
@@ -40,6 +41,7 @@ public class NewsService {
             try {
                 String url = "https://pplware.sapo.pt/page/" + i + "/";
                 // 1. Extração
+                // 1. Extração
                 List<Artigo> capturadas = scraper.extrairNoticias(url);
 
                 List<Artigo> paraGuardar = new ArrayList<>();
@@ -49,7 +51,7 @@ public class NewsService {
 
                     // CRITÉRIO DE DATA: Se a notícia for anterior à data limite, activa o stop
                     if(a.getDataPublicacao().isBefore(dataLimiteBD)) {
-                        if(forcarCargaHistorica) {
+                        if(forcarCargaHistorica || dataLimiteExterna != null) {
                             // Se for historico, ignoramos o limite de data e CONTINUAMOS a avaliar as outras desta página
                             log.debug("Notícia anterior à data limite, mas a continuar devido ao modo histórico.");
                             // Não fazemos break nem alteramos 'alcancouLimiteDeData' para true
@@ -74,11 +76,15 @@ public class NewsService {
                         // Se já existe na BD e estamos em modo histórico, apenas saltamos para a próxima sem parar o scraper
                         continue;
                     } else {
-                        // Comportamento normal do Scheduler: se já existe uma notícia na BD na página 1,
-                        // assumimos que as seguintes também já existem. Activa a paragem de segurança.
-                        log.warn("\uD83D\uDED1 Artigo já existe na BD. Paragem dinâmica ativada para evitar duplicados.");
-                        alcancouLimiteDeData = true;
-                        break;
+                       // Só activa a paragem de segurança do Scheduler se NÃO for um backfill por API
+                        if(dataLimiteExterna == null){
+                            log.warn("\uD83D\uDD34 Artigo já existe na BD. Paragem dinâmica activada para evitar duplicados.");
+                            alcancouLimiteDeData = true;
+                            break;
+                        } else {
+                            // Se for carga histórica por API, saltamos o artigo duplicado e continuamos a escavar!
+                            continue;
+                        }
                     }
 
                 }
@@ -93,5 +99,22 @@ public class NewsService {
             }
         }
         log.info("\uD83D\uDD04 Sincronização incremental terminada.");
+    }
+
+    public int carregarNoticiasDesde(LocalDate dataLimite) {
+        // 1. Converter para LocalDateTime (00:00:00 do dia indicado) para bater certo com o isBefore()
+        LocalDateTime limiteComHora = dataLimite.atStartOfDay();
+
+        // 2. Guardar o número de registos antes da importação para sabermos quantos novos entraram
+        long antesDaCarga = repository.count();
+
+        log.info("🚀 A iniciar backfill planeado para ler até: {}", limiteComHora);
+
+        // 3. Chamamos o processador com um tecto alto de páginas (ex: 50 ou 100), falso para forçar o histórico (para ele respeitar o break por data)
+        processarNoticias(100, false, limiteComHora);
+
+        // 4. Calcular o delta de novos artigos inseridos
+        long depoisDaCarga = repository.count();
+        return (int) (depoisDaCarga - antesDaCarga);
     }
 }

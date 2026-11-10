@@ -1,5 +1,6 @@
-package com.newsscanner;
+package com.newsscanner.runner;
 
+import com.newsscanner.service.NewsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +22,7 @@ public class CargaInicialRunner implements CommandLineRunner {
         log.info("\uD83D\uDE80 [CARGA INICIAL] A iniciar o carregamento histórico de 10 páginas...");
 
         try {
-            newsService.processarNoticias(10, true);
+            newsService.processarNoticias(10, true, null);
             log.info("✅ [CARGA INICIAL] Concluída com sucesso! A base de dados está actualizada.");
         } catch (Exception e) {
             log.error("❌ [CARGA INICIAL] Erro ao executar a carga de arranque: ", e);

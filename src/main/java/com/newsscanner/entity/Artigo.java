@@ -1,4 +1,4 @@
-package com.newsscanner;
+package com.newsscanner.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

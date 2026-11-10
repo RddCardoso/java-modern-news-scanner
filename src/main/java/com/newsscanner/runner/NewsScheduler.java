@@ -1,6 +1,6 @@
-package com.newsscanner;
+package com.newsscanner.runner;
 
-import com.newsscanner.NewsService;
+import com.newsscanner.service.NewsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,7 +22,7 @@ public class NewsScheduler {
     public void executarScraperAgendado() {
         log.info("⏰ SCHEDULER: O relógio disparou! Iniciando sincronização automática...");
         try {
-            newsService.processarNoticias(1, false);
+            newsService.processarNoticias(1, false, null);
 
             log.info("⏰ SCHEDULER: Sincronização concluída com sucesso. Próxima execução em 1 hora...");
         } catch (Exception e) {

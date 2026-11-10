@@ -1,5 +1,6 @@
-package com.newsscanner;
+package com.newsscanner.service;
 
+import com.newsscanner.entity.Artigo;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 

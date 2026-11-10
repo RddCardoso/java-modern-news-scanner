@@ -43,7 +43,7 @@ psql -U utilizador_java -d news_scraper_db
 ## 📖 How it Works
 The core logic utilizes a professional-grade pipeline:
 1. **Selection:** Targets specific CSS selectors to isolate relevant headlines.
-2. **Mapping:** converts raw HTML elements into immutable 'com.newsscanner.Artigo' objects.
+2. **Mapping:** converts raw HTML elements into immutable 'com.newsscanner.entity.Artigo' objects.
 3. **Filtering:** Applies logic to isolate high-value topics like AI and Java.
 4. **Collection:** Bundles processed data into a clean, usable List.
 

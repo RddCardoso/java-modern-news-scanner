@@ -1,14 +1,10 @@
-package com.newsscanner;
+package com.newsscanner.runner;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.newsscanner.repository.ArtigoRepository;
+import com.newsscanner.service.NewsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 //@Component // Isto dizso Spring: "Gere tu esta classe"
 public class NewsRunner implements CommandLineRunner {
@@ -32,7 +28,7 @@ public class NewsRunner implements CommandLineRunner {
 
         //if(totalArtigos == 0) {
            log.info("--- Iniciando Scraper Profissional ---");
-            newsService.processarNoticias(10, false);
+            newsService.processarNoticias(10, false, null);
 //        } else {
 //            System.out.println("Controlo do Runner: Já existem  " + " artigos na base de dados.");
 //            System.out.println("[SKIP] Scraper ignorado para evitar chamadas desnecessárias no desenvolvimento.]");

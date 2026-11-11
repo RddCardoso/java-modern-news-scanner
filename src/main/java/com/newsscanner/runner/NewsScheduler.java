@@ -11,22 +11,21 @@ public class NewsScheduler {
     private static final Logger log = LoggerFactory.getLogger(NewsScheduler.class);
     private final NewsService newsService;
 
-    // O Spring injecta o NewsService automaticamente aqui
     public NewsScheduler(NewsService newsService) {
         this.newsService = newsService;
     }
 
-    // initialDelay = 300000 ms(5 minutos) -> O scheduler aguarda 5 minutos após o boot antes de correr a primeira vez
-    // fixedDelay = 3600000 ms Corre de hora em hora
+    // initialDelay = 300000 ms(5 minutes)
+    // fixedDelay = 3600000 ms Runs every hour
     @Scheduled(initialDelay = 300000, fixedDelay = 3600000)
-    public void executarScraperAgendado() {
-        log.info("⏰ SCHEDULER: O relógio disparou! Iniciando sincronização automática...");
+    public void runSchedulerScraper() {
+        log.info("⏰ SCHEDULER: The clock ticked! Starting automatic synchronization...");
         try {
-            newsService.processarNoticias(1, false, null);
+            newsService.processNews(1, false, null);
 
-            log.info("⏰ SCHEDULER: Sincronização concluída com sucesso. Próxima execução em 1 hora...");
+            log.info("⏰ SCHEDULER: Synchronization successfully completed. Next execution in 1 hour...");
         } catch (Exception e) {
-            log.error("❌ SCHEDULER: Erro ao executar o scraper agendado:", e);
+            log.error("❌ SCHEDULER: Error executing scheduled scraper:", e);
         }
     }
 }

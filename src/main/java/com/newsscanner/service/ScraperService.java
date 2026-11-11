@@ -1,7 +1,11 @@
 package com.newsscanner.service;
 
-import com.newsscanner.entity.Artigo;
+import com.newsscanner.entity.Article;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -11,42 +15,41 @@ import java.util.List;
 
 @Service
 public class ScraperService {
-    // Removemos o 'static' para que isto seja um serviço que podemos instanciar
-    public List<Artigo> extrairNoticias(String url) throws IOException{
-        var doc = Jsoup.connect(url)
+
+    public static final Logger log = LoggerFactory.getLogger(ScraperService.class);
+
+    public List<Article> extractNews(String url) throws IOException{
+        Document doc = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Windows NT10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36" )
                 .timeout(10000)
                 .get();
 
-        // 1. O selector passa a ser a tag "article" (o contendor principal)
+        // 1. Target the main container element for each article
         return doc.select("article").stream()
-                .map(elementoArtigo -> {
-                    // 2. Procura o link e título dentro da tag <h2> que está no article
-                    var linkElement = elementoArtigo.selectFirst(".post-title a");
+                .map(articleElement -> {
+                    // 2. Extract link and title from the heading tag
+                    Element linkElement = articleElement.selectFirst(".post-title a");
+                    Element dataElement = articleElement.selectFirst("time");
 
-                    // 3. Procura a tag <time> no DOM
-                    var dataElement = elementoArtigo.selectFirst("time");
-
-                    String titulo = linkElement != null ? linkElement.text() : "";
+                    String title = linkElement != null ? linkElement.text() : "";
                     String link = linkElement != null ? linkElement.attr("href") : "";
 
-                    // 4. Converte o atributo 'datetime' para LocalDateTime
-                    LocalDateTime dataObtida = LocalDateTime.now();
+                    // 3. Parse published date from DOM
+                    LocalDateTime publicationDate = LocalDateTime.now();
+
                     if(dataElement != null){
                         String datetimeAttr = dataElement.attr("datetime");
                         try {
-                            // O OffsetDateTime sabe ler o fuso horário (+01:00) e converte de forma limpa
-                            dataObtida = OffsetDateTime.parse(datetimeAttr).toLocalDateTime();
+                            // OffsetDateTime handles timezone offset (+01:00) and converts to LocalDateTime
+                            publicationDate = OffsetDateTime.parse(datetimeAttr).toLocalDateTime();
                         } catch (Exception e) {
-                            // Logger profissional entraria aqui, por agora deixamos o fallback silencioso
+                            log.warn("Failed to parse date '{}'. Failling back to current timestamp.", datetimeAttr);
                         }
                     }
 
-                    // 5. Instancia a Entidade JPA com os 3 parâmetros agora obrigatórios
-                    return new Artigo(titulo, link, dataObtida);
+                    // 4. Instantiate JPA Entity
+                    return new Article(title, link, publicationDate);
                 })
-                //.filter(artigo -> artigo.getTitulo().toLowerCase().contains("java") ||
-                 //                       artigo.getTitulo().toLowerCase().contains("ai"))
                 .distinct()
                 .toList();
     }

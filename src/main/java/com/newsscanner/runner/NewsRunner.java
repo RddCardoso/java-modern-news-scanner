@@ -1,37 +1,34 @@
 package com.newsscanner.runner;
 
-import com.newsscanner.repository.ArtigoRepository;
+import com.newsscanner.repository.ArticleRepository;
 import com.newsscanner.service.NewsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 
-//@Component // Isto dizso Spring: "Gere tu esta classe"
 public class NewsRunner implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(NewsRunner.class);
 
     private final NewsService newsService;
-    private final ArtigoRepository artigoRepository;
+    private final ArticleRepository articleRepository;
 
-    // O Spring Boot detecta este construtor automaticamente e injecta as duas dependências
-    public NewsRunner(NewsService newsService, ArtigoRepository artigoRepository) {
+    public NewsRunner(NewsService newsService, ArticleRepository articleRepository) {
         this.newsService = newsService;
-        this.artigoRepository = artigoRepository;
+        this.articleRepository = articleRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("=== A verificar controlo de execução do Scraper ===");
+        log.info("=== Checking Scraper Execution Control ===");
 
-        long totalArtigos = artigoRepository.count();
+        long totalArticles = articleRepository.count();
 
-        //if(totalArtigos == 0) {
-           log.info("--- Iniciando Scraper Profissional ---");
-            newsService.processarNoticias(10, false, null);
-//        } else {
-//            System.out.println("Controlo do Runner: Já existem  " + " artigos na base de dados.");
-//            System.out.println("[SKIP] Scraper ignorado para evitar chamadas desnecessárias no desenvolvimento.]");
-//        }
+        if(totalArticles == 0) {
+           log.info("--- Starting Professional Scraper (Database is empty) ---");
+            newsService.processNews(10, false, null);
+        } else {
+            log.info("\uFE0F [SKIP] Database already contains {} articles. Scraper skipped to avoid unnecessary calls during development.", totalArticles);
+        }
     }
 }

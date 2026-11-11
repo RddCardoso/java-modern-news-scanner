@@ -1,7 +1,7 @@
 package com.newsscanner.service;
 
 import com.newsscanner.entity.Article;
-import com.newsscanner.repository.ArtigoRepository;
+import com.newsscanner.repository.ArticleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,10 +19,10 @@ public class NewsService {
     private static final Logger log = LoggerFactory.getLogger(NewsService.class);
 
     private final ScraperService scraper;
-    private final ArtigoRepository repository;
+    private final ArticleRepository repository;
 
     // Constructor-based dependency injection (clean, immutable, and test-friendly)
-    public  NewsService(ScraperService scraper, ArtigoRepository repository) {
+    public  NewsService(ScraperService scraper, ArticleRepository repository) {
         this.scraper = scraper;
         this.repository = repository;
     }
@@ -30,7 +30,7 @@ public class NewsService {
     public synchronized void processNews(int totalPages, boolean forceHistoricalLoad, LocalDateTime externalDateLimit) {
         Set<String> processedLinksThisSession = new HashSet<>();
 
-        LocalDateTime  dateLimit = (externalDateLimit != null) ? externalDateLimit : repository.findTopByOrderByDataPublicacaoDesc()
+        LocalDateTime  dateLimit = (externalDateLimit != null) ? externalDateLimit : repository.findTopByOrderByPublicationDateDesc()
                 .map(Article::getPublicationDate)
                 .orElse(LocalDateTime.now().minusDays(3));
 
@@ -69,7 +69,7 @@ public class NewsService {
                         articlesToSave.add(article);
                     } else {
                         if (forceHistoricalLoad) {
-                            // If it already exists in DB and we are in historical load mode, just skip to the next without stopping the scraper
+                            // If it already exists in DB, and we are in historical load mode, just skip to the next without stopping the scraper
                             continue;
                         } else {
                             // Only activates the Scheduler safety stop if it's NOT an API backfill

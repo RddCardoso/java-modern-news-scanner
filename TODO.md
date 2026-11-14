@@ -1,31 +1,31 @@
-# 🚀 News Scanner - Backlog 
+# 🚀 News Scanner - Backlog & Roadmap
 
 ## 🛠️ High Priority (Technical Debt)
 - [x] **Prevent Duplicates**: Implement `existsByLink` in the repository before saving in the Runner.
-- [x] **Runner Control**: Implement a ``CommandLineRunner`` to fetch pages in historical mode (``force = true``) on application startup so it seeds the database immediately.
-- [x] **Scheduler Delay**: Set an ``initialDelay`` of 5 minutes (``300000ms``) on the ``@Scheduled`` method to allow seeding to finish completely before the hourly cycle begins.
-- [x] **Database Cleanup**: Create a SQL script to remove existing duplicates (identified via DBeaver).
+- [x] **Runner Control**: Implement a ``CommandLineRunner`` to fetch initial data on application startup.
+- [x] **Scheduler Delay**: Set an ``initialDelay`` of 5 minutes (``300000ms``) on the ``@Scheduled`` method to allow seeding to finish.
+- [x] **Database Cleanup**: Create unique constraints and idempotent ingestion logic.
 
-## 🌟 News Features
+## 📰 News Features
 - [x] **REST API**: Create `ArticleController` to expose data.
-- [x] **Search Filters**: Add endpoints to search news by keywords in the tittle.
-- [x] **Metadata**: Add a `collected_at` field to track when the news was scraped.
+- [x] **Search Filters**: Add endpoints to search news by keywords in the title.
+- [x] **Metadata**: Add a `collected_at` field to track collection timestamps.
+- [x] **RSS Migration:** Transition from fragile HTML scraping to atomic RSS parsing.
 
 ## ⚙️ Infrastructure & Tools 
-- [x] **API Documentation**: Configure Swagger/OpenAPI
-- [x] **Docker Optimization**: Ensure data volumes are properly managed and back up.
+- [x] **API Documentation**: Configure Swagger/OpenAPI.
+- [x] **Docker Optimization**: Ensure PostgresSQL volumes are properly managed.
     
 ## ⏳ Next Phase: On-Demand Historical Load (Backfilling)
-- [x] **API Endpoint**: Create a ``/api/articles/historical`` endpoint that accepts a target date string.
-- [x] **Adaptive Loop**: Implement page iteration that dynamically checks the publication date.
-- [x] **Boundary Logic**: Ensure the stop condition uses target date comparison so that the target day's articles are included.
-- [x] **Swagger Validation**: Test the historical backfill with a past date (e.g., ``2026-06-01``) and verify database.
+- [x] **API Endpoint**: Create a ``/api/articles/historical`` endpoint accepting a target date string (`YYYY-MM-DD`).
+- [x] **Adaptive Parsing**: Implement target date comparison logic.
+- [x] **Boundary Logic**: Ensure historical stop conditions are met safely.
 
 ## ⚙️ Continuous Improvements
-- [x] Implement a professional logger (``org.slf4j.Logger``) in `NewsService` to replace `System.out.println`.
-- [x] Create a scheduler (`@Scheduled`) to make the scraper run automatically every hour.
-- [x] Optimize terminal logs by disabling raw SQL execution queries (`spring.jpa.show-sql=false`).
-- [x] Test and validate historical load manually via Swagger/Postman (`POST /api/articles/sync`).
+- [x] **Professional Logger:** Implement ``org.slf4j.Logger`` in `NewsService` to replace `System.out.println`.
+- [x] **Job scheduler:** Create a scheduler (`@Scheduled`) to make the scraper run automatically every hour.
+- [x] **SQL Log Optimization:** Optimize terminal logs by disabling raw SQL execution queries (`spring.jpa.show-sql=false`).
+- [x] **Manual Validation:** Test and validate historical load manually via Swagger/Postman (`POST /api/articles/sync`).
 
 ## 🧪 Testing & Quality Assurance
 -[ ] **Unit & Integration Tests**: Write comprehensive tests using JUnit 5, Mockito and Spring Boot Test. 
@@ -40,5 +40,5 @@
 -[ ] **AWS Deployment**: Containerize the application and deploy it to AWS (e.g., ECS/EKS or an EC2 instance with RDS). 
 
 ## 📊 Future Phases (Market Analyzer & Intel)
-- [ ] **Keyword Extraction**: Implements a service to parse titles/content and extract relevant market keywords.
-- [ ] **Spring AI Integration**: Connect to an LLM API (OpenAI/Ollama) to perform sentiment analysis on collected news.
+-[ ] **Keyword Extraction**: Implements a service to parse titles/content and extract relevant market keywords.
+-[ ] **Spring AI Integration**: Connect to an LLM API (OpenAI/Ollama) to perform sentiment analysis on collected news.

@@ -7,16 +7,25 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * Main entry point for the News Scanner Spring Boot application.
+ * Enables component scanning, autoconfiguration, and scheduling capabilities
+ */
 @SpringBootApplication
 @EnableScheduling
 public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
+    /**
+     * Application bootstrap method.
+     *
+     * @param args Command line arguments passed during startup
+     */
     public static void main(String[] args) {
-        // Esta linha inicia o motor do Spring e liga-se à Base de Dados
+        // Initialize Spring Ioc Container and connect to the PostgreSQL database
         ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
 
-        log.info("\uD83D\uDE80 O motor Spring Boot está a funcionar e ligado ao Docker!");
+        log.info("[BOOT] Spring Boot application is up and running, connected to Docker infrastructure!");
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -26,43 +27,64 @@ public class ArticleController {
     private final ArticleRepository articleRepository;
     private final NewsService newsService;
 
+    /**
+     * Constructor-based dependency injection for clean, test-friendly architecture.
+     *
+     * @param articleRepository The repository for article data access
+     * @param newsService       The core news processing service
+     */
     public ArticleController(ArticleRepository articleRepository, NewsService newsService) {
         this.articleRepository = articleRepository;
         this.newsService = newsService;
     }
 
+    /**
+     * Retrieves paginated articles, with optional filtering by title.
+     *
+     * @param title     Optional title filter keyword
+     * @param pageable  Pagination and sorting configuration
+     * @return A page of articles matching the criteria
+     */
     @GetMapping
+    @Operation(summary = "Get all articles", description = "Retrieves a paginated list of articles, supporting optional title filtering.")
     public Page<Article> getAllArticles(
             @RequestParam(required = false)  String title,
             @PageableDefault(size = 10) Pageable pageable) {
 
         if(title != null && !title.trim().isEmpty()) {
-            log.info("\uD83C\uDF10 API:Searching articles with title containing: '{}' (Page: {})", title, pageable.getPageNumber());
+            log.info("API:Searching articles with title containing: '{}' (Page: {})", title, pageable.getPageNumber());
             return articleRepository.findByTitleContainingIgnoreCase(title, pageable);
         }
 
-        log.info("\uD83C\uDF10 API: No filters applied. Listing all articles (Page: {})",  pageable.getPageNumber());
+        log.info("API: Listing all articles (Page: {})",  pageable.getPageNumber());
         return articleRepository.findAll(pageable);
     }
 
-    /// MANUAL TRIGGER API
-    /// Access:http://localhost:8080/api/articles/sync?pages=10&force=true
+    /**
+     * Manually triggers an immediate RSS feed synchronization pass.
+     *
+     * @return Response entity confirming the synchronization execution.
+     */
     @PostMapping("/sync")
     @Operation(
-            summary = "Trigger news scraping manually",
-            description = "Triggers the scraper for a specific number of pages. Can bypass the dynamic stop using historical mode."
+            summary = "Trigger manual news synchronization",
+            description = "Triggers an immediate fetch and synchronization from the RSS feed endpoint."
     )
-    public ResponseEntity<String> manualSync(
-            @RequestParam(defaultValue = "1") int pages,
-            @RequestParam(defaultValue = "false") boolean force) {
+    public ResponseEntity<String> manualSync() {
+        log.info("API: Manual RSS synchronization triggered via API endpoint");
 
-        log.info("\uD83D\uDD79\uFE0F API: Manual synchronization forced for {} pages!", pages);
+        // Trigger incremental synchronization using the decoupled RSS feed service
+        newsService.processNews(false, null);
 
-        newsService.processNews(pages, force, null);
-
-        return ResponseEntity.ok("Synchronization of " + pages + " page(s) successfully completed!");
+        return ResponseEntity.ok("RSS feed synchronization successfully completed!");
     }
 
+    /**
+     * Triggers a historical backfill load of news articles up to a specified target date.
+     *
+     * @param sinceDate Target date string in format YYYY-MM-DD
+     * @return Response entity with the count of newly saved articles
+     */
     @PostMapping("/historical")
     @Operation(
             summary = "Fetch historical news since a specific date",
@@ -72,15 +94,16 @@ public class ArticleController {
             @RequestParam @Parameter(description = "Target date in format YYYY-MM-DD", example = "2026-06-01")
             String sinceDate) {
 
-        log.info("ℹ\uFE0F API: Starting historical news backfill since: {}", sinceDate);
+        log.info("API: Starting historical news backfill since: {}", sinceDate);
 
-        // 1. Convert received string to LocalDate
-        LocalDate targetDate = LocalDate.parse(sinceDate);
+        // Convert received string date to LocalDateTime (start of the day)
+        LocalDate targetLocalDate = LocalDate.parse(sinceDate);
+        LocalDateTime targetDateTime = targetLocalDate.atStartOfDay();
 
-        // 2. Call service
-        int capturedTotal = newsService.loadNewsSince(targetDate);
+        // Call service with LocalDateTime argument
+        int capturedTotal = newsService.loadNewsSince(targetDateTime);
 
-        log.info("✅ API: Historical backfill finished. Saved {} new articles.",  capturedTotal);
+        log.info("API: Historical backfill finished. Saved {} new articles.",  capturedTotal);
 
         return ResponseEntity.ok("Historical synchronization completed. Added " + capturedTotal + " new articles.");
     }

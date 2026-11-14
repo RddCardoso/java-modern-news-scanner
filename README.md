@@ -1,17 +1,22 @@
 # Java News Scanner & Market Analyzer
 
-A high-performance news aggregator built with **Java 21**, designed to scrape, process, and persist technology and financial articles across multiple sources
+A high-performance news aggregator built with **Java 21**, designed to ingest, process, and persist technology and financial articles using clean architecture principles.
 
 ## 🚀 Overview
-This project serves as the backbone for a future **Stock Market Sentiment Analyzer**. It automatically scrapes real-time data using Jsoup, processes articles with modern Java Streams, handles historical backfills, prevents duplicates, and exposes a fully documented REST API.
+This project serves as the backbone for a future **Stock Market Sentiment Analyzer**. It automatically fetches real-time data from RSS feeds using Jsoup, processes articles with modern Java Streams, handles date-bound historical backfills, prevents duplicate entries, and exposes a fully documented REST API
 
 ## 🛠 Tech Stack
 - **Language:** Java 21 (immutability and modern features)
 - **Framework:** Spring Boot 3.4.0 (JPA/Hibernate, Web, Scheduling)
 - **Database:** PostgreSQL 16 (running in Docker)
-- **Web Scraping:** Jsoup (for robust HTML parsing)
+- **Data Ingestion:** Jsoup (XML/RSS feed parsing)
 - **API Documentation** OpenAPI 3 / Swagger UI
 - **Logging:** SLF4J (structured logging)
+
+## 🏛 Architecture & Design Principles
+- **SOLID & Clean Code:** Strict separation of concern across ``controller``, ``service``, ``runner``, ``repository``, and ``entity`` layers, utilizing constructor-based dependency injection.
+- **Atomic RSS Ingestion:** Decoupled feed processing ensures reliable, low over-head data extraction without fragile HTML DOM scraping.
+- **Idempotency:** Database-level unique constraints combined with repository-level link verification guarantee zero duplicate records.
 
 ## ⚙️ Setup & How to Run
 ### 1. Start the Database
@@ -40,8 +45,8 @@ psql -U utilizador_java -d news_scraper_db
 ````
 
 ## 💡 Key Features
-- **Smart Stop & Deduplication:** Prevents duplicate storage using link checks and halts scraping dynamically when existing articles are found.
-- **Scheduled Scraping:** Background worker (``NewsScheduler``) executes automatic runs every hour (with a 5-minute initial startup delay).
+- **Atomic RSS Sync & Deduplication:** Prevents duplicate storage via URL checks and processes recent feed batches efficiently.
+- **Scheduled Scraping:** Background worker (``NewsScheduler``) executes automatic syncs every hour (within a 5-minute initial startup delay).
 - **Historical Backfill:** Allows on-demand scraping retroactively from a specified target date (``YYYY-MM-DD``).
 - **REST API & Swagger:** Exposes paginated endpoints for querying articles and triggering manual runs, fully documented via Swagger UI (``/swagger-ui.html``).
 
@@ -50,16 +55,17 @@ psql -U utilizador_java -d news_scraper_db
 - ``GET /api/articles`` - Get paginated list of articles. Supports title filtering (``?title=java&page=0&size=10``).
 
 ### Management & Triggers
-- ``POST /api/articles/sync?pages=10&force=true`` - Trigger manual scraping for a specified number of pages.
+- ``POST /api/articles/sync`` - Trigger an immediate manual RSS feed synchronization pass.
 - ``POST /api/articles/historical?sinceDate=2026-06-01`` - Trigger historical backfill since a target date.
 
 ## 🎯 Roadmap
 - [x] Implement database persistence with Spring Data JPA.
 - [x] Prevent duplicate news entries (Idempotency).
+- [x] Migrate ingestion engine from fragile HTML scraping to atomic RSS feed parsing.
 - [x] Create a paginated REST API (``/api/articles``).
 - [x] Implement a background job scheduler (``@Scheduled``).
 - [x] Implement on-demand historical backfill endpoint.
 - [x] Integrate Swagger / OpenAPI documentation.
-- [ ] Add financial news sources (Yahoo Finance, CNBC),
+- [ ] Add financial news RSS sources (Yahoo Finance, CNBC),
 - [ ] Integrate LLM sentiment analysis (Spring AI/Ollama).
 - [ ] Build a web dashboard for data visualization.

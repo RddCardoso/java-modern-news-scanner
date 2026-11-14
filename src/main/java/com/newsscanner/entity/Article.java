@@ -5,6 +5,10 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a news article entity persisted in the database.
+ * Maps directly to the 'articles' table, storing essential metadata fetched from the RSS feed.
+ */
 @Entity
 @Table(name= "articles")
 public  class Article{
@@ -24,14 +28,24 @@ public  class Article{
     @Column(name = "collected_at", nullable = false, updatable = false)
     private LocalDateTime collectedAt;
 
-    // Default constructor required by JPA
+    /**
+     * Default protected constructor required by JPA specification.
+     */
     public Article() {}
 
+    /**
+     * Constructs a new Article with essential publication metadata.
+     * @param title             The title of the news articles
+     * @param link              The unique URL link of the article
+     * @param publicationDate   The original publication date and time from the RSS feed
+     */
     public Article(String title, String link,  LocalDateTime publicationDate) {
         this.title = title;
         this.link = link;
         this.publicationDate = publicationDate;
     }
+
+    // Getters and Setters...
 
     public Long getId() {
         return id;

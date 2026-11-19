@@ -37,4 +37,12 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
      * @return A {@link Page} of matching articles
      */
     Page<Article> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    /**
+     * Finds an article by its unique URL link.
+     *
+     * @param link the URL link of the article
+     * @return an {@link Optional} containing the found article, or empty if not found
+     */
+    Optional<Article> findByLink(String link);
 }
